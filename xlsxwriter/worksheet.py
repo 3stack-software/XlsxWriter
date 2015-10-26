@@ -2320,7 +2320,9 @@ class Worksheet(xmlwriter.XMLwriter):
                 'name': 'Column' + str(col_id),
                 'total_string': '',
                 'total_function': '',
+                'total_formula': '',
                 'total_value': 0,
+                'total_format': None,
                 'formula': '',
                 'format': None,
                 'name_format': None,
@@ -2357,8 +2359,30 @@ class Worksheet(xmlwriter.XMLwriter):
                         for row in range(first_data_row, last_data_row + 1):
                             self.write_formula(row, col_num, formula, xformat)
 
+                    xtotal_format = user_data.get('total_format', None)
+                    if xtotal_format is not None:
+                        col_data['total_format'] = xtotal_format._get_dxf_index()
+                    xtotal_format = xtotal_format if xtotal_format else xformat
+
+                    # Handle the formula for the total row
+                    if user_data.get('total_formula'):
+                        formula = user_data['total_formula']
+
+                        # Remove the formula '=' sign if it exists.
+                        if formula.startswith('='):
+                            formula = formula.lstrip('=')
+
+                        # Covert Excel 2010 "@" ref to 2007 "#This Row".
+                        formula = formula.replace('@', '[#This Row],')
+
+                        col_data['total_formula'] = formula
+
+                        value = user_data.get('total_value', 0)
+
+                        self.write_formula(last_row, col_num, formula, xtotal_format, value)
+
                     # Handle the function for the total row.
-                    if user_data.get('total_function'):
+                    elif user_data.get('total_function'):
                         function = user_data['total_function']
 
                         # Massage the function name.
@@ -2379,7 +2403,7 @@ class Worksheet(xmlwriter.XMLwriter):
 
                         value = user_data.get('total_value', 0)
 
-                        self.write_formula(last_row, col_num, formula, xformat,
+                        self.write_formula(last_row, col_num, formula, xtotal_format,
                                            value)
 
                     elif user_data.get('total_string'):
