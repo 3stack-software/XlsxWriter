@@ -2225,42 +2225,39 @@ class Worksheet(xmlwriter.XMLwriter):
         if self._check_dimensions(last_row, last_col, True, True):
             return -2
 
-        # List of valid input parameters.
-        valid_parameter = {
-            'autofilter': True,
-            'banded_columns': True,
+        # List of valid input parameters, with their defaults
+        valid_parameters_and_defaults = {
+            'first_column': False,
+            'last_column': False,
             'banded_rows': True,
-            'columns': True,
-            'data': True,
-            'first_column': True,
+            'banded_columns': False,
             'header_row': True,
-            'last_column': True,
-            'name': True,
-            'style': True,
-            'total_row': True,
+            'total_row': False,
+            'autofilter': True,
+            'name': None,
+            'style': 'TableStyleMedium9',
+            'columns': None,
+            'data': None,
         }
 
-        # Check for valid input parameters.
-        for param_key in options.keys():
-            if param_key not in valid_parameter:
-                warn("Unknown parameter '%s' in add_table()" % param_key)
-                return -3
+        invalid_parameters = set(options.keys()).difference(valid_parameters_and_defaults.keys())
+        if invalid_parameters:
+            warn("Unknown parameters %r in add_table()" % list(invalid_parameters))
+            return -3
 
-        # Turn on Excel's defaults.
-        options['banded_rows'] = options.get('banded_rows', True)
-        options['header_row'] = options.get('header_row', True)
-        options['autofilter'] = options.get('autofilter', True)
+        # Ensure every option is set with it's default value
+        options = dict(valid_parameters_and_defaults, **options)
 
         # Set the table options.
-        table['show_first_col'] = options.get('first_column', False)
-        table['show_last_col'] = options.get('last_column', False)
-        table['show_row_stripes'] = options.get('banded_rows', False)
-        table['show_col_stripes'] = options.get('banded_columns', False)
-        table['header_row_count'] = options.get('header_row', 0)
-        table['totals_row_shown'] = options.get('total_row', False)
+        table['show_first_col'] = options['first_column']
+        table['show_last_col'] = options['last_column']
+        table['show_row_stripes'] = options['banded_rows']
+        table['show_col_stripes'] = options['banded_columns']
+        table['header_row_count'] = options['header_row']
+        table['totals_row_shown'] = options['total_row']
 
         # Set the table name.
-        if 'name' in options:
+        if options['name']:
             name = options['name']
             table['name'] = name
 
@@ -2290,12 +2287,9 @@ class Worksheet(xmlwriter.XMLwriter):
                 return -1
 
         # Set the table style.
-        if 'style' in options:
-            table['style'] = options['style']
-            # Remove whitespace from style name.
-            table['style'] = table['style'].replace(' ', '')
-        else:
-            table['style'] = "TableStyleMedium9"
+        table['style'] = options['style']
+        # Remove whitespace from style name.
+        table['style'] = table['style'].replace(' ', '')
 
         # Swap last row/col for first row/col as necessary.
         if first_row > last_row:
@@ -2307,10 +2301,10 @@ class Worksheet(xmlwriter.XMLwriter):
         first_data_row = first_row
         last_data_row = last_row
 
-        if 'header_row' in options:
+        if options['header_row']:
             first_data_row += 1
 
-        if 'total_row' in options:
+        if options['total_row']:
             last_data_row -= 1
 
         # Set the table and autofilter ranges.
@@ -2348,7 +2342,7 @@ class Worksheet(xmlwriter.XMLwriter):
             }
 
             # Overwrite the defaults with any use defined values.
-            if 'columns' in options:
+            if options['columns']:
                 # Check if there are user defined values for this column.
                 user_data = options['columns'][col_id - 1]
 
@@ -2363,7 +2357,7 @@ class Worksheet(xmlwriter.XMLwriter):
                     col_data['name_format'] = user_data.get('header_format')
 
                     # Handle the column formula.
-                    if 'formula' in user_data and user_data['formula']:
+                    if user_data.get('formula'):
                         formula = user_data['formula']
 
                         # Remove the formula '=' sign if it exists.
@@ -2452,7 +2446,7 @@ class Worksheet(xmlwriter.XMLwriter):
             col_id += 1
 
         # Write the cell data if supplied.
-        if 'data' in options:
+        if options['data']:
             data = options['data']
 
             i = 0  # For indexing the row data.
