@@ -2323,10 +2323,9 @@ class Worksheet(xmlwriter.XMLwriter):
             table['autofilter'] = table['a_range']
 
         # Add the table columns.
-        col_id = 1
         table['columns'] = []
 
-        for col_num in range(first_col, last_col + 1):
+        for col_id, col_num in enumerate(range(first_col, last_col + 1), start=1):
             # Set up the default column data.
             col_data = {
                 'id': col_id,
@@ -2443,24 +2442,18 @@ class Worksheet(xmlwriter.XMLwriter):
                 self.write_string(first_row, col_num, col_data['name'],
                                   col_data['name_format'])
 
-            col_id += 1
-
         # Write the cell data if supplied.
         if options['data']:
             data = options['data']
 
-            i = 0  # For indexing the row data.
-            for row in range(first_data_row, last_data_row + 1):
-                j = 0  # For indexing the col data.
-                for col in range(first_col, last_col + 1):
+            for i, row in enumerate(range(first_data_row, last_data_row + 1)):
+                for j, col in enumerate(range(first_col, last_col + 1)):
                     if i < len(data) and j < len(data[i]):
                         token = data[i][j]
                         if j in col_formats:
                             self.write(row, col, token, col_formats[j])
                         else:
                             self.write(row, col, token, None)
-                    j += 1
-                i += 1
 
         # Store the table data.
         self.tables.append(table)
