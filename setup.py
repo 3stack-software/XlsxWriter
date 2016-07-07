@@ -27,8 +27,8 @@ class PyTest(Command):
         raise SystemExit(errno)
 
 setup(
-    name='XlsxWriter',
-    version='0.8.4+3stack.1',
+    name='3stack-xlsxwriter',
+    version='0.8.4.post1',
     author='John McNamara',
     author_email='jmcnamara@cpan.org',
     url='https://github.com/jmcnamara/XlsxWriter',
