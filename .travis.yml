@@ -8,12 +8,16 @@ script:
 - make sdist bdist
 sudo: false
 deploy:
-  provider: releases
-  api_key:
-    secure: VkzhznDXaHRcUrM66feRTUYN4dbfcECZSi5Kwa4iT+TOydYjx/iuhTO/tN/T+so0XOfKXZCrh7LIm0ifcLMYd63/Q7TQCBHLTQgqL31C9SOdLmJ5GOC7IfCn2GokHVkNHOfS/r1rbkGP5HIJH2HncQsBY+tP6ewO71u1IbbCHUwTCMQN6v+c5lTDC/ukqQ5hL/nzRPYFrDd18abZImMBAH9a2WwDr1U89oFFOtqleDmggMBKHUWe6+wqv0ybLgVwrknXnMUe73O46WItvKPSpKF3Tijrea5rm4cPljXjK7T/bVgvrjTp9iGq5Ky4COjx6H0awFtRBCjCgeqhKaHWdeBtG7Q1YZCQRhHS0nvscbqo4b16QsxIeOByI/uSRkLw+MNCAoBtmQACTHBtBTuOMEST+hz7Hg+MgiQX+RCPsUw/youHUgKVDaZiMDQYvjSx3hj8xKvUdtA8sOM6L/O5tgrCwzBDMJgdKN4kFT3Hxj0QsuLVCZAnb+ALrvQiGnEKqpxFfzp8Us2aK3A0TGsSuRLUyz9t4zv60T1EiYRudyNi6joBRJlFP39aCkGRwLZH2PRBahk7V1kop8AvQIGCR/fwq9WLYkRs1xtHHJ6fEMVayGCS2w7COcxa+Ef3431y2er2cu0K/tsVKxB/gLP+bd+YA3LNwu2D6ApxZf5t89I=
-  file: dist/*
-  file_glob: true
-  skip_cleanup: true
-  on:
-    tags: true
-    repo: 3stack-software/XlsxWriter
+  - provider: releases
+    api_key:
+      secure: VkzhznDXaHRcUrM66feRTUYN4dbfcECZSi5Kwa4iT+TOydYjx/iuhTO/tN/T+so0XOfKXZCrh7LIm0ifcLMYd63/Q7TQCBHLTQgqL31C9SOdLmJ5GOC7IfCn2GokHVkNHOfS/r1rbkGP5HIJH2HncQsBY+tP6ewO71u1IbbCHUwTCMQN6v+c5lTDC/ukqQ5hL/nzRPYFrDd18abZImMBAH9a2WwDr1U89oFFOtqleDmggMBKHUWe6+wqv0ybLgVwrknXnMUe73O46WItvKPSpKF3Tijrea5rm4cPljXjK7T/bVgvrjTp9iGq5Ky4COjx6H0awFtRBCjCgeqhKaHWdeBtG7Q1YZCQRhHS0nvscbqo4b16QsxIeOByI/uSRkLw+MNCAoBtmQACTHBtBTuOMEST+hz7Hg+MgiQX+RCPsUw/youHUgKVDaZiMDQYvjSx3hj8xKvUdtA8sOM6L/O5tgrCwzBDMJgdKN4kFT3Hxj0QsuLVCZAnb+ALrvQiGnEKqpxFfzp8Us2aK3A0TGsSuRLUyz9t4zv60T1EiYRudyNi6joBRJlFP39aCkGRwLZH2PRBahk7V1kop8AvQIGCR/fwq9WLYkRs1xtHHJ6fEMVayGCS2w7COcxa+Ef3431y2er2cu0K/tsVKxB/gLP+bd+YA3LNwu2D6ApxZf5t89I=
+    file: dist/*
+    file_glob: true
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: 3stack-software/XlsxWriter
+  - provider: script
+    script: bash dist_gemfury.sh
+    on:
+      tags: true
