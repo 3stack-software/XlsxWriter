@@ -11,6 +11,8 @@ pdf:
 	@make -C dev/docs latexpdf
 
 clean:
+	find . -type f -name \*.pyc -exec rm {} \;
+	rm -rf dist *.egg-info .coverage .DS_Store
 	@make -C dev/docs clean
 
 alldocs: clean docs pdf
@@ -65,6 +67,12 @@ spellcheck:
 
 releasecheck:
 	@dev/release/release_check.sh
+
+sdist: clean
+	@python setup.py sdist
+
+bdist: clean
+	@python setup.py bdist_wheel --universal
 
 release: releasecheck
 	@git push origin master
